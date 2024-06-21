@@ -2,12 +2,17 @@ package com.cooksys.quiz_api.controllers;
 
 import java.util.List;
 
+import com.cooksys.quiz_api.dtos.QuestionRequestDto;
+import com.cooksys.quiz_api.dtos.QuestionResponseDto;
+import com.cooksys.quiz_api.dtos.QuizRequestDto;
 import com.cooksys.quiz_api.dtos.QuizResponseDto;
+import com.cooksys.quiz_api.entities.Quiz;
+import com.cooksys.quiz_api.repositories.QuestionRepository;
 import com.cooksys.quiz_api.services.QuizService;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import javassist.NotFoundException;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 import lombok.RequiredArgsConstructor;
 
@@ -22,7 +27,35 @@ public class QuizController {
   public List<QuizResponseDto> getAllQuizzes() {
     return quizService.getAllQuizzes();
   }
-  
-  // TODO: Implement the remaining 6 endpoints from the documentation.
 
+  @GetMapping("/{id}/random")
+  public QuestionResponseDto getRandomQuestion(@PathVariable Long id) throws NotFoundException {
+    return quizService.getRandomQuestion(id);
+  }
+
+  @PostMapping
+  @ResponseStatus(HttpStatus.CREATED)
+  public QuizResponseDto createQuiz(@RequestBody QuizRequestDto quizRequestDto) {
+    return quizService.createQuiz(quizRequestDto);
+  }
+
+  @DeleteMapping("/{id}")
+  public QuizResponseDto deleteQuiz(@PathVariable Long id) throws NotFoundException {
+    return quizService.deleteQuiz(id);
+  }
+
+  @DeleteMapping("/{id}/delete/{questionID}")
+  public QuestionResponseDto deleteQuestion(@PathVariable Long id, @PathVariable Long questionID) throws NotFoundException {
+    return quizService.deleteQuestion(id, questionID);
+  }
+
+  @PatchMapping("/{id}/rename/{newName}")
+  public QuizResponseDto changeQuizName(@PathVariable Long id, @PathVariable String newName) throws NotFoundException {
+    return quizService.changeQuizName(id, newName);
+  }
+
+  @PatchMapping("/{id}/add")
+  public QuizResponseDto addQuestionToQuiz(@PathVariable Long id, @RequestBody QuestionRequestDto questionRequestDto) throws NotFoundException {
+    return quizService.addQuestionToQuiz(id, questionRequestDto);
+  }
 }
