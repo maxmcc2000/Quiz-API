@@ -52,7 +52,18 @@ public class QuizServiceImpl implements QuizService {
     return optionalQuizQuestion.get();
   }
 
-  private Quiz setQuestionsAndAnswers(Quiz quiz) {
+  /**
+   * Sets the quiz reference for each question and the question reference for each answer.
+   *
+   * This method iterates through each question in the provided quiz, setting the quiz reference
+   * for each question. It also iterates through each answer of a question, setting the question
+   * reference for each answer. This ensures that all questions and answers have the correct
+   * references set before the quiz is saved to the database.
+   *
+   * @param quiz the Quiz entity containing questions and answers, with their references initially set to null
+   * @return the Quiz entity with updated question and answer references
+   */
+  private Quiz setQuizAndQuestionReferences(Quiz quiz) {
     for (Question q : quiz.getQuestions()) {
       q.setQuiz(quiz);
 
@@ -73,7 +84,7 @@ public class QuizServiceImpl implements QuizService {
 
     Quiz quizToBeSaved = quizMapper.requestDtoToEntity(quizRequestDto);
 
-    quizToBeSaved = setQuestionsAndAnswers(quizToBeSaved);
+    quizToBeSaved = setQuizAndQuestionReferences(quizToBeSaved);
 
     Quiz savedQuiz = quizRepository.saveAndFlush(quizToBeSaved);
     return quizMapper.entityToResponseDto(savedQuiz);
@@ -116,7 +127,7 @@ public class QuizServiceImpl implements QuizService {
     List<Question> questions = quizToUpdate.getQuestions();
     questions.add(questionMapper.questionRequestDtoToEntity(questionRequestDto));
 
-    quizToUpdate = setQuestionsAndAnswers(quizToUpdate);
+    quizToUpdate = setQuizAndQuestionReferences(quizToUpdate);
     return quizMapper.entityToResponseDto(quizRepository.saveAndFlush(quizToUpdate));
   }
 }
